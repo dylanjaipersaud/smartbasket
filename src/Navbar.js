@@ -53,6 +53,7 @@ const Navbar = () => {
                         </ListItemButton>
                     </ListItem>
 
+                    <Link to="/ConnectionView" onClick={{ openDrawer }}>
                     <ListItem sx={{ paddingLeft: '0px' }}>
                         <ListItemButton>
                             <ListItemIcon>
@@ -63,6 +64,7 @@ const Navbar = () => {
                             </ListItemText>
                         </ListItemButton>
                     </ListItem>
+                    </Link>
 
                     <ListItem sx={{ paddingLeft: '0px' }}>
                         <ListItemButton>
