@@ -10,24 +10,43 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea, Typography } from '@mui/material';
+import Dialog from "@mui/material/Dialog";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
 
 // window.connection = null;
 
 const Connect = () => {
   var device = null;
   // var userCart = [];
+  // var userTotal = 0;
+  // var itemCount = 0;
   var tag1, tag2, tag3, tag4 = false;
   var RTag1, RTag2, RTag3, RTag4 = null;
-  const [itemCount, setItemCount] = useState(0);
-  const [userTotal, setUserTotal] = useState(0);
-  const [itemDetails, setItemDetails] = useState(false);
+
   const [supportsBluetooth, setSupportsBluetooth] = useState(false);
   const [isDisconnected, setIsDisconnected] = useState(true);
   const [RFIDTagID1, setRFIDTagID1] = useState(null);
   const [RFIDTagID2, setRFIDTagID2] = useState(null);
   const [RFIDTagID3, setRFIDTagID3] = useState(null);
   const [RFIDTagID4, setRFIDTagID4] = useState(null);
+
+  const [itemDetails, setItemDetails] = useState(false);
+  const [selectedItem, setSelectedItem] = useState({
+    id: 0,
+    uid: "",
+    name: '',
+    short_description: '',
+    long_description: '',
+    stock: 0,
+    image: '',
+    price: 0.0,
+  });
   const [userCart, setUserCart] = useState([]);
+  const [itemCount, setItemCount] = useState(0);
+  const [userTotal, setUserTotal] = useState(0);
   // const [RFIDTagIDString, setRFIDTagIDString] = useState(null);
 
   const [items, setItems] = useState([
@@ -145,26 +164,47 @@ const Connect = () => {
   function addToCart(tag) {
     for (let i = 0; i < items.length; i++) {
       if (tag == items[i].uid) {
-        console.log("Adding " + items[i].name);
-        setUserTotal(Number(userTotal) + 3);
-        setItemCount(itemCount + 1);
-        setUserCart(userCart => [...userCart, items[i]])
-        return items[i].name;
+        var newItem = items[i];
+        console.log("Added " + newItem.name);
+        setItemCount(itemCount => itemCount + 1);
+        setUserCart(userCart => [...userCart, newItem]);
+        setUserTotal(userTotal => userTotal + newItem.price);
+        return newItem.name;
       }
     }
     return console.log("Item not found");
   }
 
+  const removeFromCart = (tag) => {
+    for (let i = 0; i < items.length; i++) {
+      if (tag == items[i].uid) {
+        var newItem = items[i];
+        console.log("Removed " + newItem.name);
+        setItemCount(itemCount - 1);
+        setUserCart(userCart.filter(item => item.uid !== tag));
+        setUserTotal(userTotal => userTotal - newItem.price);
+        setSelectedItem(selectedItem);
+        handleToClose();
+        return newItem.name;
+      }
+    }
+  }
+
   function clearCart() {
+    alert("Purchased " + itemCount + " items for $" + userTotal + "\nCart Cleared");
     setUserCart([]);
     setUserTotal(0);
     setItemCount(0);
-    alert("Cart Cleared");
   }
 
-  const cardClick = async (item) => {
-    setItemDetails(!itemDetails);
+  const cardClick = (item) => {
+    setSelectedItem(selectedItem => item);
+    setItemDetails(true);
   }
+
+  const handleToClose = () => {
+    setItemDetails(false);
+  };
 
   // Check for disconnection
   const onDisconnected = (event) => {
@@ -293,25 +333,41 @@ const Connect = () => {
 
       }
       {supportsBluetooth && !isDisconnected &&
-        // <div>
-        //   <p>Connected to Peripheral</p>
-        //   <br />
-        //   {RFIDTagID1} {RFIDTagID2} {RFIDTagID3} {RFIDTagID4}
-        //   <br></br>
-        //   {RFIDTagIDString}
-        // </div>
-        // <Navigate to="/basket" replace={true}></Navigate>
         <div className='cartview-main'>
           <Navbar />
           <h1 className='cart-title'>Shopping Cart</h1>
-          
+
           {itemCount > 0 &&
             <div className='cart-item-list'>
               <h2>Total: ${userTotal}</h2>
+              <h2>Quantity: {itemCount} Items</h2>
+              <Dialog open={itemDetails} onClose={handleToClose}>
+                <DialogTitle>{selectedItem.name}</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    {selectedItem.short_description}
+                    <br />
+                    <p>{selectedItem.long_description}</p>
+                    
+                    <br />
+                    Price: {selectedItem.price}
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  {/* <Button onClick={removeFromCart(selectedItem.uid)}
+                    color="warning" autoFocus>
+                    Remove
+                  </Button> */}
+                  <Button onClick={handleToClose}
+                    color="primary" autoFocus>
+                    Close
+                  </Button>
+                </DialogActions>
+              </Dialog>
               {userCart.map((item) => (
-                <Button variant="none" onClick={() => cardClick(item)} style={{ width: "100%",  textDecoration: "none", textTransform: "none", padding: "0px" }}>
-                <Card variant='outlined' sx={item_style} className='list-item-style'>
-                  {/* <CardActionArea > */}
+                <Button variant="none" onClick={() => cardClick(item)} style={{ width: "100%", textDecoration: "none", textTransform: "none", padding: "0px" }}>
+                  <Card variant='outlined' sx={item_style} className='list-item-style'>
+                    {/* <CardActionArea > */}
                     <CardMedia
                       component="img"
                       sx={{ width: "40%" }}
@@ -337,8 +393,8 @@ const Connect = () => {
                         </Box>
                       </CardContent>
                     </Box>
-                  {/* </CardActionArea> */}
-                </Card>
+                    {/* </CardActionArea> */}
+                  </Card>
                 </Button>
               ))}
               <br></br>
@@ -346,10 +402,8 @@ const Connect = () => {
               <Button variant="outlined" onClick={clearCart}>Checkout</Button>
               <br></br>
             </div>}
-            {itemCount <= 0 &&
-            <div>
-              <h2>Add some items</h2>
-            </div>
+          {itemCount <= 0 &&
+            <h2>Add some items</h2>
           }
         </div>
       }
