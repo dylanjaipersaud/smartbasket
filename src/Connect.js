@@ -19,7 +19,7 @@ const Connect = () => {
   var tag1, tag2, tag3, tag4 = false;
   var RTag1, RTag2, RTag3, RTag4 = null;
   const [itemCount, setItemCount] = useState(0);
-  const [userTotal, setUserTotal] = useState(0.0);
+  const [userTotal, setUserTotal] = useState(0);
   const [itemDetails, setItemDetails] = useState(false);
   const [supportsBluetooth, setSupportsBluetooth] = useState(false);
   const [isDisconnected, setIsDisconnected] = useState(true);
@@ -131,23 +131,12 @@ const Connect = () => {
   }, []);
 
 
-  // Checks localstorage for an exisiting connection
-  // useEffect(() => {
-  //   if(tag1 && tag2 && tag3 && tag4){
-  //     console.log("New Entry");
-  //   }
-  // }, []);
-
   function checkCartUpdate() {
-    // alert("entered cart check");
-    console.log(tag1 + " " + tag2 + " " + tag3 + " " + tag4);
     if (tag1 && tag2 && tag3 && tag4) {
-      console.log("New Entry");
       tag1 = false;
       tag2 = false;
       tag3 = false;
       tag4 = false;
-      console.log(tag1 + " " + tag2 + " " + tag3 + " " + tag4);
       var rfidString = String(RTag1) + " " + String(RTag2) + " " + String(RTag3) + " " + String(RTag4);
       console.log(addToCart(rfidString));
     }
@@ -157,7 +146,7 @@ const Connect = () => {
     for (let i = 0; i < items.length; i++) {
       if (tag == items[i].uid) {
         console.log("Adding " + items[i].name);
-        setUserTotal(Number(userTotal) + Number(items[i].price));
+        setUserTotal(Number(userTotal) + 3);
         setItemCount(itemCount + 1);
         setUserCart(userCart => [...userCart, items[i]])
         return items[i].name;
@@ -183,7 +172,7 @@ const Connect = () => {
     setIsDisconnected(true);
   }
 
-  // Update characterisitc values
+  // Update characteristic values
   const handleCharacteristicValueChanged1 = (event) => {
     setRFIDTagID1(event.target.value.getUint8(0));
     RTag1 = event.target.value.getUint8(0);
