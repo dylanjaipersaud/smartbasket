@@ -1,28 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
-// import { Navigate } from "react-router-dom";
 import Navbar from './Navbar';
-// import ItemData from './ItemData'
 import Box from '@mui/material/Box';
-// import * as MUI from '@mui/material'
-import { Link } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import { CardActionArea, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import Dialog from "@mui/material/Dialog";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 
-// window.connection = null;
+
 
 const Connect = () => {
   var device = null;
-  // var userCart = [];
-  // var userTotal = 0;
-  // var itemCount = 0;
+
   var tag1, tag2, tag3, tag4 = false;
   var RTag1, RTag2, RTag3, RTag4 = null;
 
@@ -47,7 +41,6 @@ const Connect = () => {
   const [userCart, setUserCart] = useState([]);
   const [itemCount, setItemCount] = useState(0);
   const [userTotal, setUserTotal] = useState(0);
-  // const [RFIDTagIDString, setRFIDTagIDString] = useState(null);
 
   const [items, setItems] = useState([
     {
@@ -206,6 +199,15 @@ const Connect = () => {
     setItemDetails(false);
   };
 
+  const showExample = () => {
+    setSupportsBluetooth(true);
+    setIsDisconnected(false);
+    addToCart("77 55 199 223");
+    addToCart("173 48 199 223");
+    addToCart("237 48 199 223");
+    addToCart("205 46 199 223");
+  }
+
   // Check for disconnection
   const onDisconnected = (event) => {
     alert(`The device ${event.target} is disconnected`);
@@ -264,39 +266,25 @@ const Connect = () => {
       const characteristic2 = await service.getCharacteristic('bf6ae613-d58c-4a19-9a6e-803c926a1c92');
       const characteristic3 = await service.getCharacteristic('bf6ae613-d58c-4a19-9a6e-803c926a1c93');
       const characteristic4 = await service.getCharacteristic('bf6ae613-d58c-4a19-9a6e-803c926a1c94');
-      // const characteristicArr = await service.getCharacteristics();
-      // console.log(characteristicArr);
-      // const stringCharacteristic = await service.getCharacteristic('bf6ae613-d58c-4a19-9a6e-803c926a1c95');
 
       // Subscribe to RFID level notifications
       characteristic1.startNotifications();
       characteristic2.startNotifications();
       characteristic3.startNotifications();
       characteristic4.startNotifications();
-      // characteristicArr.startNotifications();
-      // stringCharacteristic.startNotifications();
 
       // When the RFID level changes, call a function
       characteristic1.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged1);
       characteristic2.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged2);
       characteristic3.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged3);
       characteristic4.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged4);
-      // characteristicArr.addEventListener()
-      // stringCharacteristic.addEventListener('characteristicvaluechanged', handleStringCharacteristicValueChanged);
 
       // Read the RFID level value
       const reading1 = await characteristic1.readValue();
       const reading2 = await characteristic2.readValue();
       const reading3 = await characteristic3.readValue();
       const reading4 = await characteristic4.readValue();
-      // const stringReading = await stringCharacteristic.readValue();
 
-      // Show the initial reading on the web page
-      // setRFIDTagID1(reading1.getUint8(0), 1);
-      // setRFIDTagID2(reading2.getUint8(0), 2);
-      // setRFIDTagID3(reading3.getUint8(0), 3);
-      // setRFIDTagID4(reading4.getUint8(0), 4);
-      // setRFIDTagIDString(stringReading.getUnit32(""), 5)
     } catch (error) {
       console.log(`There was an error with getting characteristics: ${error}`);
     }
@@ -328,6 +316,8 @@ const Connect = () => {
           {!supportsBluetooth &&
             <p>This browser doesn't support the Web Bluetooth API</p>
           }
+          <br></br>
+          <Button variant="outlined" onClick={showExample} style={{ color: "white" }}>View an Example Basket</Button>
 
         </div>
 
@@ -354,10 +344,6 @@ const Connect = () => {
                   </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                  {/* <Button onClick={removeFromCart(selectedItem.uid)}
-                    color="warning" autoFocus>
-                    Remove
-                  </Button> */}
                   <Button onClick={handleToClose}
                     color="primary" autoFocus>
                     Close
@@ -367,7 +353,6 @@ const Connect = () => {
               {userCart.map((item) => (
                 <Button variant="none" onClick={() => cardClick(item)} style={{ width: "100%", textDecoration: "none", textTransform: "none", padding: "0px" }}>
                   <Card variant='outlined' sx={item_style} className='list-item-style'>
-                    {/* <CardActionArea > */}
                     <CardMedia
                       component="img"
                       sx={{ width: "40%" }}
@@ -385,7 +370,6 @@ const Connect = () => {
                         <br />
                         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
                           <Typography component="div" variant="subtitle2" color="text.secondary">
-                            {/* Quantity: {item.stock} */}
                           </Typography>
                           <Typography variant="subtitle2" color="text" component="div">
                             ${item.price}
@@ -393,12 +377,10 @@ const Connect = () => {
                         </Box>
                       </CardContent>
                     </Box>
-                    {/* </CardActionArea> */}
                   </Card>
                 </Button>
               ))}
               <br></br>
-              {/* <hr style={{ height: "2px", width:'100vw'}}></hr> */}
               <Button variant="outlined" onClick={clearCart}>Checkout</Button>
               <br></br>
             </div>}
